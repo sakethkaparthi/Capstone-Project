@@ -25,7 +25,7 @@ public class FileDBHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE " + FilesContract.FileEntry.TABLE_NAME + " (" +
                         FilesContract.FileEntry._ID + " INTEGER PRIMARY KEY, " +
-                        FilesContract.FileEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL," +
+                        FilesContract.FileEntry.COLUMN_NAME + " TEXT NOT NULL," +
                         FilesContract.FileEntry.COLUMN_LINK + " TEXT NOT NULL, " +
                         FilesContract.FileEntry.COLUMN_UPLOAD_DATE + " );"
         );
