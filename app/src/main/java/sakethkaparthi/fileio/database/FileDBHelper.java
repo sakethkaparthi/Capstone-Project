@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class FileDBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "fileList.db";
 
     public FileDBHelper(Context context) {
@@ -27,7 +27,8 @@ public class FileDBHelper extends SQLiteOpenHelper {
                         FilesContract.FileEntry._ID + " INTEGER PRIMARY KEY, " +
                         FilesContract.FileEntry.COLUMN_NAME + " TEXT NOT NULL," +
                         FilesContract.FileEntry.COLUMN_LINK + " TEXT NOT NULL, " +
-                        FilesContract.FileEntry.COLUMN_UPLOAD_DATE + " );"
+                        FilesContract.FileEntry.COLUMN_UPLOAD_DATE + " INTEGER NOT NULL, " +
+                        FilesContract.FileEntry.COLUMN_STATUS + " INTEGER NOT  NULL );"
         );
 
     }
