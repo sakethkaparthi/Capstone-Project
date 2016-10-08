@@ -16,6 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadStatusDelegate;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -80,7 +86,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         OutputStream outputStream = openFileOutput(displayName, Context.MODE_PRIVATE);
                         IOUtils.copy(inputStream, outputStream);
                         File file = new File(getFilesDir(), displayName);
+                        String serverUrlString = "https://file.io/";
+                        new MultipartUploadRequest(this, serverUrlString)
+                                .addFileToUpload(file.getAbsolutePath(), "file")
+                                .setNotificationConfig(getNotificationConfig(displayName))
+                                .setAutoDeleteFilesAfterSuccessfulUpload(true)
+                                .setMaxRetries(3)
+                                .setDelegate(new UploadStatusDelegate() {
+                                    @Override
+                                    public void onProgress(UploadInfo uploadInfo) {
+                                        Log.d(TAG, "onProgress: " + uploadInfo.getProgressPercent());
+                                    }
 
+                                    @Override
+                                    public void onError(UploadInfo uploadInfo, Exception exception) {
+                                        exception.printStackTrace();
+                                    }
+
+                                    @Override
+                                    public void onCompleted(UploadInfo uploadInfo, ServerResponse serverResponse) {
+                                        Log.d(TAG, "onCompleted: File uploaded successfully");
+                                        Log.d(TAG, "Server Response " + serverResponse.getBodyAsString());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(UploadInfo uploadInfo) {
+
+                                    }
+                                }).startUpload();
                     }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -91,6 +124,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 }
             }
         }
+    }
+
+    private UploadNotificationConfig getNotificationConfig(String filename) {
+
+        return new UploadNotificationConfig()
+                .setIcon(R.drawable.ic_cloud_upload)
+                .setCompletedIcon(android.R.drawable.stat_sys_upload_done)
+                .setErrorIcon(android.R.drawable.stat_notify_error)
+                .setTitle(filename)
+                .setInProgressMessage(getString(R.string.uploading))
+                .setCompletedMessage(getString(R.string.upload_success))
+                .setErrorMessage(getString(R.string.upload_error))
+                .setAutoClearOnSuccess(false)
+                .setClickIntent(new Intent(this, MainActivity.class))
+                .setClearOnAction(true)
+                .setRingToneEnabled(true);
     }
 
     @Override
