@@ -2,6 +2,7 @@ package sakethkaparthi.fileio.activities;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
-                        String displayName = cursor
+                        final String displayName = cursor
                                 .getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                         Log.i(TAG, "Display Name: " + displayName);
                         int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         OutputStream outputStream = openFileOutput(displayName, Context.MODE_PRIVATE);
                         assert inputStream != null;
                         IOUtils.copy(inputStream, outputStream);
-                        File file = new File(getFilesDir(), displayName);
+                        final File file = new File(getFilesDir(), displayName);
                         ProgressRequestBody fileBody = new ProgressRequestBody(file, new ProgressRequestBody.UploadCallbacks() {
                             @Override
                             public void onProgressUpdate(int percentage) {
@@ -110,7 +111,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                     response.body().toString();
                                     if (response.isSuccessful()) {
                                         JSONObject object = new JSONObject(String.valueOf(response.body()));
-                                        Log.d(TAG, "Success: " + object.getString("link"));
+                                        String link = object.getString("link");
+                                        Log.d(TAG, "Success: " + link);
+                                        ContentValues values = new ContentValues();
+                                        values.put(FilesContract.FileEntry.COLUMN_NAME, displayName);
+                                        values.put(FilesContract.FileEntry.COLUMN_LINK, link);
+                                        values.put(FilesContract.FileEntry.COLUMN_UPLOAD_DATE, System.currentTimeMillis());
+                                        values.put(FilesContract.FileEntry.COLUMN_STATUS, 1);
+                                        getContentResolver().insert(FilesContract.FileEntry.CONTENT_URI, values);
                                     } else {
                                         throw new Exception("Error while uploading");
                                     }

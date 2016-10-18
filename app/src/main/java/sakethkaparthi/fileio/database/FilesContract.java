@@ -23,7 +23,7 @@ public class FilesContract {
                 "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_FILE;
 
         public static final String TABLE_NAME = "fileTable";
-        public static final String COLUMN_NAME = "flieName";
+        public static final String COLUMN_NAME = "fileName";
         public static final String COLUMN_UPLOAD_DATE = "fileUploadDate";
         public static final String COLUMN_LINK = "fileLink";
         public static final String COLUMN_STATUS = "status";
