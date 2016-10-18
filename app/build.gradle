@@ -27,7 +27,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
     debugCompile 'com.facebook.stetho:stetho:1.4.1'
-    compile 'net.gotev:uploadservice:3.0.3'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.android.support:design:24.2.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
 }

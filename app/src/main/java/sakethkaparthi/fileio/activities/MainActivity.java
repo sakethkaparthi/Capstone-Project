@@ -16,22 +16,24 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadStatusDelegate;
+import com.google.gson.JsonObject;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import okhttp3.MultipartBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.database.FilesContract;
+import sakethkaparthi.fileio.models.ProgressRequestBody;
+import sakethkaparthi.fileio.networkclients.RetrofitClient;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -60,10 +62,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == OPEN_FILE_CODE && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.
-            // Pull that URI using resultData.getData().
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
@@ -84,62 +82,59 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         Log.i(TAG, "Size: " + size);
                         InputStream inputStream = getContentResolver().openInputStream(uri);
                         OutputStream outputStream = openFileOutput(displayName, Context.MODE_PRIVATE);
+                        assert inputStream != null;
                         IOUtils.copy(inputStream, outputStream);
                         File file = new File(getFilesDir(), displayName);
-                        String serverUrlString = "https://file.io/";
-                        new MultipartUploadRequest(this, serverUrlString)
-                                .addFileToUpload(file.getAbsolutePath(), "file")
-                                .setNotificationConfig(getNotificationConfig(displayName))
-                                .setAutoDeleteFilesAfterSuccessfulUpload(true)
-                                .setMaxRetries(3)
-                                .setDelegate(new UploadStatusDelegate() {
-                                    @Override
-                                    public void onProgress(UploadInfo uploadInfo) {
-                                        Log.d(TAG, "onProgress: " + uploadInfo.getProgressPercent());
-                                    }
+                        ProgressRequestBody fileBody = new ProgressRequestBody(file, new ProgressRequestBody.UploadCallbacks() {
+                            @Override
+                            public void onProgressUpdate(int percentage) {
+                                Log.d(TAG, "onProgressUpdate: " + percentage);
+                            }
 
-                                    @Override
-                                    public void onError(UploadInfo uploadInfo, Exception exception) {
-                                        exception.printStackTrace();
-                                    }
+                            @Override
+                            public void onError() {
 
-                                    @Override
-                                    public void onCompleted(UploadInfo uploadInfo, ServerResponse serverResponse) {
-                                        Log.d(TAG, "onCompleted: File uploaded successfully");
-                                        Log.d(TAG, "Server Response " + serverResponse.getBodyAsString());
-                                    }
+                            }
 
-                                    @Override
-                                    public void onCancelled(UploadInfo uploadInfo) {
-
+                            @Override
+                            public void onFinish() {
+                                Log.d(TAG, "File upload finished");
+                            }
+                        });
+                        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), fileBody);
+                        Call<JsonObject> request = RetrofitClient.getAPI().uploadImage(filePart);
+                        request.enqueue(new Callback<JsonObject>() {
+                            @Override
+                            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                try {
+                                    response.body().toString();
+                                    if (response.isSuccessful()) {
+                                        JSONObject object = new JSONObject(String.valueOf(response.body()));
+                                        Log.d(TAG, "Success: " + object.getString("link"));
+                                    } else {
+                                        throw new Exception("Error while uploading");
                                     }
-                                }).startUpload();
+                                } catch (Exception e) {
+                                    Log.d(TAG, "onResponse: " + e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<JsonObject> call, Throwable t) {
+                                Log.d(TAG, "onFailure: " + t.getMessage());
+                            }
+                        });
+                        //request.execute();
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    cursor.close();
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
             }
         }
-    }
-
-    private UploadNotificationConfig getNotificationConfig(String filename) {
-
-        return new UploadNotificationConfig()
-                .setIcon(R.drawable.ic_cloud_upload)
-                .setCompletedIcon(android.R.drawable.stat_sys_upload_done)
-                .setErrorIcon(android.R.drawable.stat_notify_error)
-                .setTitle(filename)
-                .setInProgressMessage(getString(R.string.uploading))
-                .setCompletedMessage(getString(R.string.upload_success))
-                .setErrorMessage(getString(R.string.upload_error))
-                .setAutoClearOnSuccess(false)
-                .setClickIntent(new Intent(this, MainActivity.class))
-                .setClearOnAction(true)
-                .setRingToneEnabled(true);
     }
 
     @Override
