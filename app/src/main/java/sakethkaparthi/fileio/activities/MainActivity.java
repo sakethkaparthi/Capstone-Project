@@ -2,8 +2,6 @@ package sakethkaparthi.fileio.activities;
 
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -17,24 +15,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.google.gson.JsonObject;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import okhttp3.MultipartBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.database.FilesContract;
-import sakethkaparthi.fileio.models.ProgressRequestBody;
-import sakethkaparthi.fileio.networkclients.RetrofitClient;
+import sakethkaparthi.fileio.services.UploadService;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -81,60 +64,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             size = "Unknown";
                         }
                         Log.i(TAG, "Size: " + size);
-                        InputStream inputStream = getContentResolver().openInputStream(uri);
-                        OutputStream outputStream = openFileOutput(displayName, Context.MODE_PRIVATE);
-                        assert inputStream != null;
-                        IOUtils.copy(inputStream, outputStream);
-                        final File file = new File(getFilesDir(), displayName);
-                        ProgressRequestBody fileBody = new ProgressRequestBody(file, new ProgressRequestBody.UploadCallbacks() {
-                            @Override
-                            public void onProgressUpdate(int percentage) {
-                                Log.d(TAG, "onProgressUpdate: " + percentage);
-                            }
-
-                            @Override
-                            public void onError() {
-
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                Log.d(TAG, "File upload finished");
-                            }
-                        });
-                        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), fileBody);
-                        Call<JsonObject> request = RetrofitClient.getAPI().uploadImage(filePart);
-                        request.enqueue(new Callback<JsonObject>() {
-                            @Override
-                            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                                try {
-                                    response.body().toString();
-                                    if (response.isSuccessful()) {
-                                        JSONObject object = new JSONObject(String.valueOf(response.body()));
-                                        String link = object.getString("link");
-                                        Log.d(TAG, "Success: " + link);
-                                        ContentValues values = new ContentValues();
-                                        values.put(FilesContract.FileEntry.COLUMN_NAME, displayName);
-                                        values.put(FilesContract.FileEntry.COLUMN_LINK, link);
-                                        values.put(FilesContract.FileEntry.COLUMN_UPLOAD_DATE, System.currentTimeMillis());
-                                        values.put(FilesContract.FileEntry.COLUMN_STATUS, 1);
-                                        getContentResolver().insert(FilesContract.FileEntry.CONTENT_URI, values);
-                                    } else {
-                                        throw new Exception("Error while uploading");
-                                    }
-                                } catch (Exception e) {
-                                    Log.d(TAG, "onResponse: " + e);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<JsonObject> call, Throwable t) {
-                                Log.d(TAG, "onFailure: " + t.getMessage());
-                            }
-                        });
-                        //request.execute();
+                        Intent uploadIntent = new Intent(MainActivity.this, UploadService.class);
+                        uploadIntent.putExtra("uri", uri.toString());
+                        uploadIntent.putExtra("displayName", displayName);
+                        startService(uploadIntent);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     if (cursor != null) {
