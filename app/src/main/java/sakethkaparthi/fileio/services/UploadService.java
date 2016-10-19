@@ -3,6 +3,7 @@ package sakethkaparthi.fileio.services;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import sakethkaparthi.fileio.R;
+import sakethkaparthi.fileio.activities.MainActivity;
 import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.models.ProgressRequestBody;
 import sakethkaparthi.fileio.networkclients.RetrofitClient;
@@ -54,11 +56,20 @@ public class UploadService extends IntentService {
             IOUtils.copy(inputStream, outputStream);
             final File file = new File(getFilesDir(), displayName);
             final int id = 1;
+            Intent notificationIntent = new Intent(getApplicationContext(), UploadService.class);
+            notificationIntent.putExtra("uri", uri.toString());
+            notificationIntent.putExtra("displayName", displayName);
+            final PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, notificationIntent, 0);
             mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mBuilder = new NotificationCompat.Builder(this);
             mBuilder.setContentTitle(displayName)
                     .setContentText("Upload in progress")
                     .setSmallIcon(R.drawable.ic_cloud_upload);
+            mBuilder.setProgress(100, 0, false);
+            // Displays the progress bar for the first time.
+            Notification notification = mBuilder.build();
+            notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+            mNotifyManager.notify(id, notification);
             ProgressRequestBody fileBody = new ProgressRequestBody(file, new ProgressRequestBody.UploadCallbacks() {
                 @Override
                 public void onProgressUpdate(int percentage) {
@@ -72,10 +83,11 @@ public class UploadService extends IntentService {
 
                 @Override
                 public void onError() {
-                    mBuilder.setContentText("Upload error")
+                    mBuilder.setContentText("Upload error. Tap to retry")
                             .setSmallIcon(android.R.drawable.stat_notify_error)
                             // Removes the progress bar
-                            .setProgress(0, 0, false);
+                            .setProgress(0, 0, false)
+                            .setContentIntent(pendingIntent);
 
                     mNotifyManager.notify(id, mBuilder.build());
                 }
@@ -101,9 +113,20 @@ public class UploadService extends IntentService {
                             values.put(FilesContract.FileEntry.COLUMN_LINK, link);
                             values.put(FilesContract.FileEntry.COLUMN_UPLOAD_DATE, System.currentTimeMillis());
                             values.put(FilesContract.FileEntry.COLUMN_STATUS, 1);
+                            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent resultPendingIntent =
+                                    PendingIntent.getActivity(
+                                            getApplicationContext(),
+                                            0,
+                                            resultIntent,
+                                            PendingIntent.FLAG_UPDATE_CURRENT
+                                    );
+
                             mBuilder.setContentText("Upload complete")
                                     // Removes the progress bar
-                                    .setProgress(0, 0, false);
+                                    .setProgress(0, 0, false)
+                                    .setContentIntent(resultPendingIntent)
+                                    .setAutoCancel(true);
                             mNotifyManager.notify(id, mBuilder.build());
                             getContentResolver().insert(FilesContract.FileEntry.CONTENT_URI, values);
                             file.delete();
@@ -114,10 +137,11 @@ public class UploadService extends IntentService {
                         }
                     } catch (Exception e) {
                         Log.d(TAG, "onResponse: " + e);
-                        mBuilder.setContentText("Upload error")
+                        mBuilder.setContentText("Upload error. Tap to retry")
                                 .setSmallIcon(android.R.drawable.stat_notify_error)
                                 // Removes the progress bar
-                                .setProgress(0, 0, false);
+                                .setProgress(0, 0, false)
+                                .setContentIntent(pendingIntent);
 
                         mNotifyManager.notify(id, mBuilder.build());
                     }
@@ -126,10 +150,11 @@ public class UploadService extends IntentService {
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
-                    mBuilder.setContentText("Upload error")
+                    mBuilder.setContentText("Upload error. Tap to retry")
                             .setSmallIcon(android.R.drawable.stat_notify_error)
                             // Removes the progress bar
-                            .setProgress(0, 0, false);
+                            .setProgress(0, 0, false)
+                            .setContentIntent(pendingIntent);
 
                     mNotifyManager.notify(id, mBuilder.build());
                 }
