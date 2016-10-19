@@ -33,5 +33,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_cloud_upload" />
+        android:contentDescription="@string/upload_file"
+        app:srcCompat="@drawable/ic_cloud_upload" />
 </android.support.design.widget.CoordinatorLayout>

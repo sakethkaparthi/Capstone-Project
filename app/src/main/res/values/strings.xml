@@ -8,4 +8,5 @@
     <string name="upload_finished">Upload complete</string>
     <string name="file_expired">expired</string>
     <string name="icon_description">icon</string>
+    <string name="upload_file">Upload a file</string>
 </resources>

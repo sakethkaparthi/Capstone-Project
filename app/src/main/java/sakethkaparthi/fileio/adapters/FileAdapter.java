@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,6 +43,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         cursor.moveToPosition(position);
         holder.fileNameTextView.setText(cursor.getString(1));
+        holder.iconImageView.setImageResource(getIconFromExtension(cursor.getString(1)));
         int uploadedDay = getDateFromEpoch(cursor.getLong(3));
         int today = getDateFromEpoch(System.currentTimeMillis());
         int remaining = uploadedDay + 13 - today;
@@ -74,5 +77,39 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
         DateFormat formatter = new SimpleDateFormat("DDD", Locale.UK);
         String dateFormatted = formatter.format(date);
         return Integer.valueOf(dateFormatted);
+    }
+
+    private int getIconFromExtension(String filename) {
+        String extension = FilenameUtils.getExtension(filename);
+        if (extension.equalsIgnoreCase("docx") || extension.equalsIgnoreCase("doc"))
+            return R.drawable.ic_doc;
+        if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg"))
+            return R.drawable.ic_jpg;
+        if (extension.equalsIgnoreCase("avi"))
+            return R.drawable.ic_avi;
+        if (extension.equalsIgnoreCase("mp3"))
+            return R.drawable.ic_mp3;
+        if (extension.equalsIgnoreCase("png"))
+            return R.drawable.ic_png;
+        if (extension.equalsIgnoreCase("zip"))
+            return R.drawable.ic_zip;
+        if (extension.equalsIgnoreCase("mp4"))
+            return R.drawable.ic_mp4;
+        if (extension.equalsIgnoreCase("pdf"))
+            return R.drawable.ic_pdf;
+        if (extension.equalsIgnoreCase("ppt") || extension.equalsIgnoreCase("pptx"))
+            return R.drawable.ic_ppt;
+        if (extension.equalsIgnoreCase("exe"))
+            return R.drawable.ic_exe;
+        if (extension.equalsIgnoreCase("iso"))
+            return R.drawable.ic_iso;
+        if (extension.equalsIgnoreCase("txt"))
+            return R.drawable.ic_txt;
+        if (extension.equalsIgnoreCase("xml"))
+            return R.drawable.ic_xml;
+        if (extension.equalsIgnoreCase("xls"))
+            return R.drawable.ic_xls;
+
+        return R.drawable.ic_file;
     }
 }

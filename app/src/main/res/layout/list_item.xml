@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
-    android:orientation="horizontal">
+    android:layout_marginBottom="3dp"
+    android:layout_marginTop="3dp"
+    app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/file_icon"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="20"
-        android:contentDescription="@string/icon_description"
-        android:src="@drawable/ic_file" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp">
 
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="80">
+        <ImageView
+            android:id="@+id/file_icon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="20"
+            android:contentDescription="@string/icon_description" />
 
-        <TextView
-            android:id="@+id/file_name_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            tools:text="File name" />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="80">
 
-        <TextView
-            android:id="@+id/file_expiry_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/file_name_text_view"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            tools:text="Expires in 14 days" />
-    </RelativeLayout>
-</LinearLayout>
+            <TextView
+                android:id="@+id/file_name_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                tools:text="File name" />
+
+            <TextView
+                android:id="@+id/file_expiry_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/file_name_text_view"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                tools:text="Expires in 14 days" />
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
