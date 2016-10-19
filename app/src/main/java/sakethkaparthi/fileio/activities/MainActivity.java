@@ -11,11 +11,14 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
 import sakethkaparthi.fileio.R;
+import sakethkaparthi.fileio.adapters.FileAdapter;
 import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.services.UploadService;
 
@@ -23,12 +26,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int OPEN_FILE_CODE = 666;
+    private FileAdapter adapter;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getLoaderManager().initLoader(0, null, this);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
@@ -40,6 +45,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivityForResult(intent, OPEN_FILE_CODE);
             }
         });
+        mRecyclerView = (RecyclerView) findViewById(R.id.files_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -87,9 +97,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        while (cursor.moveToNext()) {
-            Log.d(TAG, cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getLong(3));
-        }
+        adapter = new FileAdapter(MainActivity.this, cursor);
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override

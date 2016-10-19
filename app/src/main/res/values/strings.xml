@@ -3,4 +3,9 @@
     <string name="uploading">Uploading</string>
     <string name="upload_success">Successfully uploaded</string>
     <string name="upload_error">Error uploading</string>
+    <string name="upload_in_progress">Upload in progress</string>
+    <string name="error_uploading">Upload error. Tap to retry</string>
+    <string name="upload_finished">Upload complete</string>
+    <string name="file_expired">expired</string>
+    <string name="icon_description">icon</string>
 </resources>

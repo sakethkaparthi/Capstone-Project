@@ -63,7 +63,7 @@ public class UploadService extends IntentService {
             mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mBuilder = new NotificationCompat.Builder(this);
             mBuilder.setContentTitle(displayName)
-                    .setContentText("Upload in progress")
+                    .setContentText(getString(R.string.upload_in_progress))
                     .setSmallIcon(R.drawable.ic_cloud_upload);
             mBuilder.setProgress(100, 0, false);
             // Displays the progress bar for the first time.
@@ -83,7 +83,7 @@ public class UploadService extends IntentService {
 
                 @Override
                 public void onError() {
-                    mBuilder.setContentText("Upload error. Tap to retry")
+                    mBuilder.setContentText(getString(R.string.error_uploading))
                             .setSmallIcon(android.R.drawable.stat_notify_error)
                             // Removes the progress bar
                             .setProgress(0, 0, false)
@@ -122,7 +122,7 @@ public class UploadService extends IntentService {
                                             PendingIntent.FLAG_UPDATE_CURRENT
                                     );
 
-                            mBuilder.setContentText("Upload complete")
+                            mBuilder.setContentText(getString(R.string.upload_finished))
                                     // Removes the progress bar
                                     .setProgress(0, 0, false)
                                     .setContentIntent(resultPendingIntent)
@@ -137,7 +137,7 @@ public class UploadService extends IntentService {
                         }
                     } catch (Exception e) {
                         Log.d(TAG, "onResponse: " + e);
-                        mBuilder.setContentText("Upload error. Tap to retry")
+                        mBuilder.setContentText(getString(R.string.error_uploading))
                                 .setSmallIcon(android.R.drawable.stat_notify_error)
                                 // Removes the progress bar
                                 .setProgress(0, 0, false)
@@ -150,7 +150,7 @@ public class UploadService extends IntentService {
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
-                    mBuilder.setContentText("Upload error. Tap to retry")
+                    mBuilder.setContentText(getString(R.string.error_uploading))
                             .setSmallIcon(android.R.drawable.stat_notify_error)
                             // Removes the progress bar
                             .setProgress(0, 0, false)
