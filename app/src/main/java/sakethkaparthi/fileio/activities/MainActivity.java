@@ -96,8 +96,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        adapter = new FileAdapter(MainActivity.this, cursor);
-        mRecyclerView.setAdapter(adapter);
+        if (cursor.getCount() == 0) {
+            findViewById(R.id.empty_view).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.empty_view).setVisibility(View.GONE);
+            while (cursor.moveToNext()) {
+                Log.d(TAG, "Data base: ");
+            }
+            cursor.moveToFirst();
+            adapter = new FileAdapter(MainActivity.this, cursor);
+            mRecyclerView.setAdapter(adapter);
+        }
     }
 
     @Override

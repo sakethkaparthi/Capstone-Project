@@ -1,12 +1,14 @@
 package sakethkaparthi.fileio.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,10 +42,21 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         cursor.moveToPosition(position);
         holder.fileNameTextView.setText(cursor.getString(1));
         holder.iconImageView.setImageResource(getIconFromExtension(cursor.getString(1)));
+        holder.shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cursor.moveToPosition(position);
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Download " + cursor.getString(1) + " from " + cursor.getString(2));
+                sendIntent.setType("text/plain");
+                activity.startActivity(sendIntent);
+            }
+        });
         int uploadedDay = getDateFromEpoch(cursor.getLong(3));
         int today = getDateFromEpoch(System.currentTimeMillis());
         int remaining = uploadedDay + 13 - today;
@@ -63,12 +76,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView fileNameTextView, fileExpiryTextView;
         ImageView iconImageView;
+        ImageButton shareButton;
 
         ViewHolder(View v) {
             super(v);
             fileNameTextView = (TextView) v.findViewById(R.id.file_name_text_view);
             fileExpiryTextView = (TextView) v.findViewById(R.id.file_expiry_text_view);
             iconImageView = (ImageView) v.findViewById(R.id.file_icon);
+            shareButton = (ImageButton) v.findViewById(R.id.share_button);
         }
     }
 
