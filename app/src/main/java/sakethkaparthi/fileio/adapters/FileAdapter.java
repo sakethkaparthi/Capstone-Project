@@ -71,7 +71,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(new Intent(activity, FileDescriptionActivity.class).putExtra("item", cursor.getPosition()));
+                activity.startActivity(new Intent(activity, FileDescriptionActivity.class).putExtra("item",position));
             }
         });
     }
