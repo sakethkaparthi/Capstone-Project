@@ -19,13 +19,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name=".database.FileProvider"
             android:authorities="sakethkaparthi.fileio"
             android:exported="false"
             android:protectionLevel="signature"
             android:syncable="true" />
+
         <service android:name=".services.UploadService" />
+
+        <activity android:name=".activities.FileDescriptionActivity"></activity>
     </application>
 
 </manifest>

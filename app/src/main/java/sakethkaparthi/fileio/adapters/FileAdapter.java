@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import sakethkaparthi.fileio.R;
+import sakethkaparthi.fileio.activities.FileDescriptionActivity;
 
 /**
  * Created by saketh on 19/10/16.
@@ -66,6 +68,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
         } else {
             holder.fileExpiryTextView.setText("Expires in " + remaining + " days");
         }
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.startActivity(new Intent(activity, FileDescriptionActivity.class).putExtra("item", cursor.getPosition()));
+            }
+        });
     }
 
     @Override
@@ -77,6 +85,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
         TextView fileNameTextView, fileExpiryTextView;
         ImageView iconImageView;
         ImageButton shareButton;
+        CardView cardView;
 
         ViewHolder(View v) {
             super(v);
@@ -84,6 +93,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
             fileExpiryTextView = (TextView) v.findViewById(R.id.file_expiry_text_view);
             iconImageView = (ImageView) v.findViewById(R.id.file_icon);
             shareButton = (ImageButton) v.findViewById(R.id.share_button);
+            cardView = (CardView) v.findViewById(R.id.card_view);
         }
     }
 

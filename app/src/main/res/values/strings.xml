@@ -10,4 +10,5 @@
     <string name="icon_description">icon</string>
     <string name="upload_file">Upload a file</string>
     <string name="no_data_available">You dont have any uploads. Try uploading files with the upload button below</string>
+    <string name="delete">Delete</string>
 </resources>

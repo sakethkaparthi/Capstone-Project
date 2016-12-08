@@ -16,11 +16,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.adapters.FileAdapter;
 import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.services.UploadService;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,6 +53,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Animation scaleDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_down);
+                Animation scaleUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up);
+                if (floatingActionButton != null) {
+                    if (dy > 0) {
+                        if (floatingActionButton.getVisibility() == VISIBLE) {
+                            floatingActionButton.startAnimation(scaleDown);
+                            floatingActionButton.setVisibility(GONE);
+                        }
+
+                    } else {
+                        if (floatingActionButton.getVisibility() == GONE) {
+                            floatingActionButton.startAnimation(scaleUp);
+                            floatingActionButton.setVisibility(VISIBLE);
+                        }
+
+                    }
+                }
+            }
+        });
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -97,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor.getCount() == 0) {
-            findViewById(R.id.empty_view).setVisibility(View.VISIBLE);
+            findViewById(R.id.empty_view).setVisibility(VISIBLE);
         } else {
-            findViewById(R.id.empty_view).setVisibility(View.GONE);
+            findViewById(R.id.empty_view).setVisibility(GONE);
             while (cursor.moveToNext()) {
                 Log.d(TAG, "Data base: ");
             }
