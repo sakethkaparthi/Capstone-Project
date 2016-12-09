@@ -30,6 +30,7 @@ import sakethkaparthi.fileio.activities.MainActivity;
 import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.models.ProgressRequestBody;
 import sakethkaparthi.fileio.networkclients.RetrofitClient;
+import sakethkaparthi.fileio.receivers.RetryReceiver;
 
 /**
  * Created by saketh on 19/10/16.
@@ -49,17 +50,19 @@ public class UploadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Uri uri = Uri.parse(intent.getExtras().getString("uri"));
         final String displayName = intent.getExtras().getString("displayName");
+        Log.d(TAG, "onHandleIntent: " + uri.toString() + " " + displayName);
         try {
             final InputStream inputStream = getContentResolver().openInputStream(uri);
             final OutputStream outputStream = openFileOutput(displayName, Context.MODE_PRIVATE);
             assert inputStream != null;
             IOUtils.copy(inputStream, outputStream);
             final File file = new File(getFilesDir(), displayName);
-            final int id = 1;
-            Intent notificationIntent = new Intent(getApplicationContext(), UploadService.class);
+            final int id = (int) Math.floor(Math.random());
+            Intent notificationIntent = new Intent(getApplicationContext(), RetryReceiver.class);
             notificationIntent.putExtra("uri", uri.toString());
             notificationIntent.putExtra("displayName", displayName);
-            final PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, notificationIntent, 0);
+            Log.d(TAG, "create intent: " + uri.toString() + " " + displayName);
+            final PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mBuilder = new NotificationCompat.Builder(this);
             mBuilder.setContentTitle(displayName)
@@ -121,17 +124,19 @@ public class UploadService extends IntentService {
                                             resultIntent,
                                             PendingIntent.FLAG_UPDATE_CURRENT
                                     );
-
+                            Log.d(TAG, "onResponse: Before notify");
                             mBuilder.setContentText(getString(R.string.upload_finished))
                                     // Removes the progress bar
                                     .setProgress(0, 0, false)
                                     .setContentIntent(resultPendingIntent)
                                     .setAutoCancel(true);
                             mNotifyManager.notify(id, mBuilder.build());
+                            Log.d(TAG, "onResponse: After notify");
                             getContentResolver().insert(FilesContract.FileEntry.CONTENT_URI, values);
-                            file.delete();
+                            boolean deleted = file.delete();
                             inputStream.close();
                             outputStream.close();
+                            Log.d(TAG, "Deleted: " + deleted);
                         } else {
                             throw new Exception("Error while uploading");
                         }
@@ -162,5 +167,11 @@ public class UploadService extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mNotifyManager.cancelAll();
     }
 }

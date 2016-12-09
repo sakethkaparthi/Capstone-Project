@@ -28,8 +28,14 @@
             android:syncable="true" />
 
         <service android:name=".services.UploadService" />
+        <receiver
+            android:name=".receivers.RetryReceiver"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
 
         <activity android:name=".activities.FileDescriptionActivity"></activity>
+
     </application>
 
 </manifest>
