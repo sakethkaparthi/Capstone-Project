@@ -2,12 +2,15 @@ package sakethkaparthi.fileio.activities;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +39,8 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
     TextView fileLinkTextView;
     @BindView(R.id.file_expiry_text_view)
     TextView fileExpiryTextView;
+    @BindView(R.id.file_delete_button)
+    AppCompatButton fileDeleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,22 +59,35 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        cursor.moveToPosition(getIntent().getExtras().getInt("item"));
-        fileNameTextView.setText(cursor.getString(1));
-        fileIcon.setImageResource(getIconFromExtension(cursor.getString(1)));
-        fileLinkTextView.setText(cursor.getString(2));
-        Date date = new Date(cursor.getLong(3));
-        uploadDateTextView.setText("Uploaded on " + new SimpleDateFormat("dd/MM", Locale.UK).format(date));
-        int uploadedDay = getDateFromEpoch(cursor.getLong(3));
-        int today = getDateFromEpoch(System.currentTimeMillis());
-        int remaining = uploadedDay + 13 - today;
-        if (remaining < 0) {
-            fileExpiryTextView.setText(R.string.file_expired);
-            fileExpiryTextView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-        } else {
-            fileExpiryTextView.setText("Expires in " + remaining + " days");
+    public void onLoadFinished(final Loader<Cursor> loader, final Cursor cursor) {
+        try {
+            cursor.moveToPosition(getIntent().getExtras().getInt("item"));
+            fileNameTextView.setText(cursor.getString(1));
+            fileIcon.setImageResource(getIconFromExtension(cursor.getString(1)));
+            fileLinkTextView.setText(cursor.getString(2));
+            Date date = new Date(cursor.getLong(3));
+            uploadDateTextView.setText("Uploaded on " + new SimpleDateFormat("dd/MM", Locale.UK).format(date));
+            int uploadedDay = getDateFromEpoch(cursor.getLong(3));
+            int today = getDateFromEpoch(System.currentTimeMillis());
+            int remaining = uploadedDay + 13 - today;
+            if (remaining < 0) {
+                fileExpiryTextView.setText(R.string.file_expired);
+                fileExpiryTextView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+            } else {
+                fileExpiryTextView.setText("Expires in " + remaining + " days");
+            }
+            fileDeleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getContentResolver().delete(FilesContract.FileEntry.CONTENT_URI, FilesContract.FileEntry.COLUMN_LINK +" ='" + cursor.getString(2) + "'",null);
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+            });
+        }catch (Exception e){
+
         }
+
     }
 
     @Override
