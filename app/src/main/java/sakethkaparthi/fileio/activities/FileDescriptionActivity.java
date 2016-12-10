@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,6 +43,7 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
     TextView fileExpiryTextView;
     @BindView(R.id.file_delete_button)
     AppCompatButton fileDeleteButton;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,25 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.description_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_share) {
+            cursor.moveToPosition(getIntent().getExtras().getInt("item"));
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Download " + cursor.getString(1) + " from " + cursor.getString(2));
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(FileDescriptionActivity.this, FilesContract.FileEntry.CONTENT_URI, null, null, null, FilesContract.FileEntry.COLUMN_UPLOAD_DATE + " desc, " + FilesContract.FileEntry.COLUMN_STATUS + " desc");
     }
@@ -61,6 +83,7 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
     @Override
     public void onLoadFinished(final Loader<Cursor> loader, final Cursor cursor) {
         try {
+            this.cursor = cursor;
             cursor.moveToPosition(getIntent().getExtras().getInt("item"));
             fileNameTextView.setText(cursor.getString(1));
             fileIcon.setImageResource(getIconFromExtension(cursor.getString(1)));
@@ -79,12 +102,12 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
             fileDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getContentResolver().delete(FilesContract.FileEntry.CONTENT_URI, FilesContract.FileEntry.COLUMN_LINK +" ='" + cursor.getString(2) + "'",null);
-                    startActivity(new Intent(getApplicationContext(),MainActivity.class)
+                    getContentResolver().delete(FilesContract.FileEntry.CONTENT_URI, FilesContract.FileEntry.COLUMN_LINK + " ='" + cursor.getString(2) + "'", null);
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
