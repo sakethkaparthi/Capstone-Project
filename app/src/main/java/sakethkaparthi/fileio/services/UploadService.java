@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +33,7 @@ import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.models.ProgressRequestBody;
 import sakethkaparthi.fileio.networkclients.RetrofitClient;
 import sakethkaparthi.fileio.receivers.RetryReceiver;
+import sakethkaparthi.fileio.widget.FilesWidgetProvider;
 
 /**
  * Created by saketh on 19/10/16.
@@ -133,6 +136,11 @@ public class UploadService extends IntentService {
                             mNotifyManager.notify(id, mBuilder.build());
                             Log.d(TAG, "onResponse: After notify");
                             getContentResolver().insert(FilesContract.FileEntry.CONTENT_URI, values);
+                            Intent intent = new Intent(getApplicationContext(), FilesWidgetProvider.class);
+                            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                            int widgetIDs[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), FilesWidgetProvider.class));
+                            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIDs);
+                            sendBroadcast(intent);
                             boolean deleted = file.delete();
                             inputStream.close();
                             outputStream.close();

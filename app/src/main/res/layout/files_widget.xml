@@ -36,6 +36,5 @@
         android:text="@string/no_data_available_widget"
         android:textColor="#ffffff"
         android:textSize="20sp"
-        android:textStyle="bold"
         android:visibility="gone" />
 </LinearLayout>

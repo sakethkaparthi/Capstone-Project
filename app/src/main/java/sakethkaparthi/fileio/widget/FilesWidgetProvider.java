@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.activities.FileDescriptionActivity;
@@ -49,9 +48,8 @@ public class FilesWidgetProvider extends AppWidgetProvider {
             remoteViews.setOnClickPendingIntent(R.id.widget_item, pendingIntent);
             // END
 */
-            final Intent onItemClick = new Intent(context, WidgetViewsService.class);
+            final Intent onItemClick = new Intent(context, FilesWidgetProvider.class);
             onItemClick.setAction(CLICK_ACTION);
-            onItemClick.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             onItemClick.setData(Uri.parse(onItemClick
                     .toUri(Intent.URI_INTENT_SCHEME)));
             final PendingIntent onClickPendingIntent = PendingIntent
@@ -71,8 +69,8 @@ public class FilesWidgetProvider extends AppWidgetProvider {
         Log.d(TAG, "onReceive: received something");
         if (intent.getAction().equals(CLICK_ACTION)) {
             int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
             Intent intentToLaunch = new Intent(context, FileDescriptionActivity.class);
+            intentToLaunch.putExtra("item", viewIndex);
             intentToLaunch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentToLaunch);
         }

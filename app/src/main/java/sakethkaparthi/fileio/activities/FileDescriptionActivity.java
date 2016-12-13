@@ -1,6 +1,8 @@
 package sakethkaparthi.fileio.activities;
 
 import android.app.LoaderManager;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -27,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.database.FilesContract;
+import sakethkaparthi.fileio.widget.FilesWidgetProvider;
 
 public class FileDescriptionActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     @BindView(R.id.file_icon)
@@ -103,6 +106,11 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
                 @Override
                 public void onClick(View v) {
                     getContentResolver().delete(FilesContract.FileEntry.CONTENT_URI, FilesContract.FileEntry.COLUMN_LINK + " ='" + cursor.getString(2) + "'", null);
+                    Intent intent = new Intent(getApplicationContext(), FilesWidgetProvider.class);
+                    intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                    int widgetIDs[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), FilesWidgetProvider.class));
+                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIDs);
+                    sendBroadcast(intent);
                     startActivity(new Intent(getApplicationContext(), MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
