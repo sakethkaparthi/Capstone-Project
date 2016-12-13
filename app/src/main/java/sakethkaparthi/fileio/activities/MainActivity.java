@@ -19,6 +19,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.adapters.FileAdapter;
 import sakethkaparthi.fileio.database.FilesContract;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivityForResult(intent, OPEN_FILE_CODE);
             }
         });
+        MobileAds.initialize(getApplicationContext(), getResources().getString(R.string.banner_ad_unit_id));
         mRecyclerView = (RecyclerView) findViewById(R.id.files_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -77,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
         getLoaderManager().initLoader(0, null, this);
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("79053C9FC58F84225101E72A5113F19B").build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
