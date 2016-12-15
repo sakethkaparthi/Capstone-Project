@@ -3,6 +3,7 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/clouds"
@@ -50,12 +51,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <!-- linearLayour for fab button-->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="right">
+                android:gravity="end">
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fab"
@@ -68,7 +69,6 @@
                     app:srcCompat="@drawable/ic_cloud_upload" />
             </LinearLayout>
 
-            <!-- LinearLayour for AdView-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -82,10 +82,8 @@
                     ads:adSize="SMART_BANNER"
                     ads:adUnitId="@string/banner_ad_unit_id" />
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
-    <!-- end from here-->
 
 
 </android.support.design.widget.CoordinatorLayout>

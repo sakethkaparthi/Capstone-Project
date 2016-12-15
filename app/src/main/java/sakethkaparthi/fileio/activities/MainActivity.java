@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,9 +55,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.setType("*/*");
-                startActivityForResult(intent, OPEN_FILE_CODE);
+                if (isNetworkAvailable()) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, OPEN_FILE_CODE);
+                } else {
+                    Snackbar.make(findViewById(R.id.container), getResources().getString(R.string.no_internet), Snackbar.LENGTH_LONG).show();
+                }
             }
         });
         MobileAds.initialize(getApplicationContext(), getResources().getString(R.string.banner_ad_unit_id));
@@ -93,8 +98,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         });
         getLoaderManager().initLoader(0, null, this);
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("79053C9FC58F84225101E72A5113F19B").build();
-        mAdView.loadAd(adRequest);
+        if (isNetworkAvailable()) {
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice("79053C9FC58F84225101E72A5113F19B").build();
+            mAdView.loadAd(adRequest);
+        } else {
+            mAdView.setVisibility(GONE);
+        }
     }
 
     @Override

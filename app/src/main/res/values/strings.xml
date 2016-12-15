@@ -17,4 +17,5 @@
     <string name="no_data_available_widget">You dont have any uploads available</string>
     <string name="banner_ad_unit_id">ca-app-pub-8409882999421836/7470771700</string>
     <string name="files">Uploaded Files</string>
+    <string name="no_internet">Please connect to the internet</string>
 </resources>
