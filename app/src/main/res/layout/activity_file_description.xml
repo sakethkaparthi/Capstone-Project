@@ -134,6 +134,7 @@
             android:layout_marginTop="20dp"
             android:background="@color/colorAccent"
             android:drawableStart="@drawable/ic_delete"
+            android:contentDescription="@string/delete"
             android:paddingEnd="50dp"
             android:paddingStart="20dp"
             android:text="@string/delete"

@@ -28,6 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="50dp"
+        android:contentDescription="@string/files"
+        android:focusable="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <TextView
