@@ -1,5 +1,10 @@
 # File.io
 Ephemeral file transfer app for Android
+
+Convenient, anonymous and secure
+
+Using the service provided by [File.io]https://www.file.io
+
 License
 -------
 ```

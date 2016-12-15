@@ -55,6 +55,7 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getResources().getString(R.string.file_desc));
         ButterKnife.bind(this);
         getLoaderManager().initLoader(0, null, this);
     }

@@ -18,4 +18,13 @@
     <string name="banner_ad_unit_id">ca-app-pub-8409882999421836/7470771700</string>
     <string name="files">Uploaded Files</string>
     <string name="no_internet">Please connect to the internet</string>
+    <string name="file_desc">File Description</string>
+    <string name="about">File.io is an easy ephemeral file sharing app that lets you upload any file up to 5GB size and share anonymously. The file is immediately deleted after once downloaded
+        \nThis app uses the service provided by www.file.io
+        \nBy using this app you agree to the terms and conditions mentioned at https://www.file.io/tos.html
+    \n\nHow to use:
+    \n1)Select a file using the button on home screen
+    \n2)Track the progress at the notification
+    \n3)When uploaded, you can share the link to anyone\nNote: Avoid using services with preview(like whatsapp) because it causes the file to be downloaded and no longer accessible).</string>
+    <string name="action_about">About</string>
 </resources>
