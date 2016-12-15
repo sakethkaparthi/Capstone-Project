@@ -2,10 +2,13 @@ package sakethkaparthi.fileio.activities;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -22,9 +25,11 @@ import android.view.animation.AnimationUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import sakethkaparthi.fileio.R;
 import sakethkaparthi.fileio.adapters.FileAdapter;
+import sakethkaparthi.fileio.applications.FileIOApplication;
 import sakethkaparthi.fileio.database.FilesContract;
 import sakethkaparthi.fileio.services.UploadService;
 
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int OPEN_FILE_CODE = 666;
     private FileAdapter adapter;
     private RecyclerView mRecyclerView;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
         MobileAds.initialize(getApplicationContext(), getResources().getString(R.string.banner_ad_unit_id));
+        FileIOApplication application = (FileIOApplication) getApplication();
+        mFirebaseAnalytics = application.getAnalyticsInstance();
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "screen");
+        params.putString(FirebaseAnalytics.Param.ITEM_NAME, "Main Activity");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, params);
         mRecyclerView = (RecyclerView) findViewById(R.id.files_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -64,20 +76,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 super.onScrolled(recyclerView, dx, dy);
                 Animation scaleDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_down);
                 Animation scaleUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up);
-                if (floatingActionButton != null) {
-                    if (dy > 0) {
-                        if (floatingActionButton.getVisibility() == VISIBLE) {
-                            floatingActionButton.startAnimation(scaleDown);
-                            floatingActionButton.setVisibility(GONE);
-                        }
-
-                    } else {
-                        if (floatingActionButton.getVisibility() == GONE) {
-                            floatingActionButton.startAnimation(scaleUp);
-                            floatingActionButton.setVisibility(VISIBLE);
-                        }
-
+                if (dy > 0) {
+                    if (floatingActionButton.getVisibility() == VISIBLE) {
+                        floatingActionButton.startAnimation(scaleDown);
+                        floatingActionButton.setVisibility(GONE);
                     }
+
+                } else {
+                    if (floatingActionButton.getVisibility() == GONE) {
+                        floatingActionButton.startAnimation(scaleUp);
+                        floatingActionButton.setVisibility(VISIBLE);
+                    }
+
                 }
             }
         });
@@ -91,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == OPEN_FILE_CODE && resultCode == Activity.RESULT_OK) {
-            Uri uri = null;
+            Uri uri;
             if (data != null) {
                 uri = data.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
@@ -136,9 +146,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             findViewById(R.id.empty_view).setVisibility(VISIBLE);
         } else {
             findViewById(R.id.empty_view).setVisibility(GONE);
-            while (cursor.moveToNext()) {
-                Log.d(TAG, "Data base: ");
-            }
             cursor.moveToFirst();
             adapter = new FileAdapter(MainActivity.this, cursor);
             mRecyclerView.setAdapter(adapter);
@@ -149,4 +156,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
 }
