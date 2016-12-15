@@ -108,7 +108,7 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
                 fileExpiryTextView.setText(R.string.file_expired);
                 fileExpiryTextView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
             } else {
-                fileExpiryTextView.setText("Expires in " + remaining + " days");
+                fileExpiryTextView.setText(getString(R.string.expires_in, remaining));
             }
             fileDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override

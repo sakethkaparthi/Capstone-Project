@@ -67,7 +67,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
             holder.fileExpiryTextView.setText(R.string.file_expired);
             holder.fileExpiryTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent));
         } else {
-            holder.fileExpiryTextView.setText("Expires in " + remaining + " days");
+            holder.fileExpiryTextView.setText(String.format(activity.getResources().getString(R.string.expires_in), remaining));
         }
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

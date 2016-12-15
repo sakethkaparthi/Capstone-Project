@@ -12,6 +12,7 @@
     <string name="no_data_available">You dont have any uploads. Try uploading files with the upload button below</string>
     <string name="delete">Delete</string>
     <string name="action_share">Share</string>
+    <string name="expires_in">Expires in %d days</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="no_data_available_widget">You dont have any uploads available</string>
@@ -27,4 +28,5 @@
     \n2)Track the progress at the notification
     \n3)When uploaded, you can share the link to anyone\nNote: While sharing, avoid using services with preview(like whatsapp) because it causes the file to be downloaded and no longer accessible).</string>
     <string name="action_about">About</string>
+    <string name="share_link">Share this file</string>
 </resources>
