@@ -29,4 +29,5 @@
     \n3)When uploaded, you can share the link to anyone\nNote: While sharing, avoid using services with preview(like whatsapp) because it causes the file to be downloaded and no longer accessible).</string>
     <string name="action_about">About</string>
     <string name="share_link">Share this file</string>
+    <string name="desc">Description</string>
 </resources>
