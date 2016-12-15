@@ -67,13 +67,20 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_share) {
-            cursor.moveToPosition(getIntent().getExtras().getInt("item"));
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Download " + cursor.getString(1) + " from " + cursor.getString(2));
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+
+            case R.id.action_share:
+                cursor.moveToPosition(getIntent().getExtras().getInt("item"));
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Download " + cursor.getString(1) + " from " + cursor.getString(2));
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -115,7 +122,7 @@ public class FileDescriptionActivity extends AppCompatActivity implements Loader
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 

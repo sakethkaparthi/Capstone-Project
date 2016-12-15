@@ -3,6 +3,7 @@ package sakethkaparthi.fileio.adapters;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -71,7 +72,10 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(new Intent(activity, FileDescriptionActivity.class).putExtra("item",position));
+                Intent intent = new Intent(activity, FileDescriptionActivity.class).putExtra("item", position);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(activity, holder.iconImageView, "image");
+                activity.startActivity(intent, options.toBundle());
             }
         });
     }
