@@ -2,7 +2,6 @@ package sakethkaparthi.fileio.applications;
 
 import android.app.Application;
 
-import com.facebook.stetho.Stetho;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
@@ -15,7 +14,6 @@ public class FileIOApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Stetho.initializeWithDefaults(this);
     }
 
     synchronized public FirebaseAnalytics getAnalyticsInstance() {
