@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'saketh'
+            keyPassword 'kaparthi'
+            storeFile file("$rootDir/FileIO.jks")
+            storePassword 'kaparthi'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
     defaultConfig {
@@ -17,6 +25,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     aaptOptions {
